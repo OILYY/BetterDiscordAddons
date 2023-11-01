@@ -1,0 +1,22 @@
+/**
+ * @name ServerColumns
+ * @description Changes the Server List to a grid-like Structure which allows any Amount of Columns
+ * @author OilyGranySmith
+ * @version 1.0
+ * @authorId 731431244235145216
+ * @invite Y36CTWeCFE
+ * @website https://OILYY.github.io/
+ * @source https://github.com/OILYY/BetterDiscordAddons/tree/master/Themes/ServerColumns/
+ * @updateUrl https://OILYY.github.io/BetterDiscordAddons/Themes/ServerColumns/ServerColumns.theme.css
+ */
+
+@import url(https://OILYY.github.io/BetterDiscordAddons/Themes/ServerColumns/ServerColumns.css);
+
+:root {
+	--columns:			3;							/* default:	3					(amount of servercolumns)																		*/
+	
+	--guildsize:		50;							/* default:	50					(serversize in pixel)																			*/
+	--guildgap:			3;							/* default:	3					(top/bottom gap between servers in pixel)														*/
+	
+	--aligndms:			0;							/* default:	0					(should DMs be aligned in columns: 0 = no, 1 = yes)												*/
+}
