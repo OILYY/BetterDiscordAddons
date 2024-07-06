@@ -2113,7 +2113,7 @@ img[src='/assets/387a7c504c96b992872d.svg'] {
 }
 
 .container_e5cdf3 {
-	-webkit-mask: url(https://mwittrien.github.io/BetterDiscordAddons/Themes/_res/svgs/common/voice_level_bar.svg);
+	-webkit-mask: url(https://OILYY.github.io/BetterDiscordAddons/Themes/_res/svgs/common/voice_level_bar.svg);
 }
 .notches_e5cdf3 {
 	background: transparent !important;
@@ -2233,7 +2233,7 @@ img[src='/assets/387a7c504c96b992872d.svg'] {
 .bd-social-link[title="BBD" i] .bd-social-logo,
 .bd-social-link[title="BandagedBD" i] .bd-social-logo {
 	background: var(--interactive-normal);
-	-webkit-mask: url(https://mwittrien.github.io/BetterDiscordAddons/Themes/_res/svgs/settingsicons/betterdiscord.svg) center/contain no-repeat;
+	-webkit-mask: url(https://OILYY.github.io/BetterDiscordAddons/Themes/_res/svgs/settingsicons/betterdiscord.svg) center/contain no-repeat;
 	opacity: 1;
 	transition: background .15s ease;
 }
@@ -3513,14 +3513,14 @@ html .bd-settings-group.collapsible .bd-settings-title::after {
 	width: 16px;
 	height: 16px;
 	padding: 0;
-	-webkit-mask: url(https://mwittrien.github.io/BetterDiscordAddons/Themes/_res/svgs/common/fav_star_empty.svg) center/contain no-repeat;
+	-webkit-mask: url(https://OILYY.github.io/BetterDiscordAddons/Themes/_res/svgs/common/fav_star_empty.svg) center/contain no-repeat;
 }
 #app-mount .fav:hover,
 #app-mount .fav.active {
 	background: #faa61a;
 }
 #app-mount .fav.active {
-	-webkit-mask: url(https://mwittrien.github.io/BetterDiscordAddons/Themes/_res/svgs/common/fav_star.svg) center/contain no-repeat;
+	-webkit-mask: url(https://OILYY.github.io/BetterDiscordAddons/Themes/_res/svgs/common/fav_star.svg) center/contain no-repeat;
 }
 
 html .floating-window.resizable {
