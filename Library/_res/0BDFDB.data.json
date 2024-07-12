@@ -3417,10 +3417,8 @@
 		"voiceuserlarge": ["VoiceChannel", "userLarge"],
 		"voiceusersmall": ["VoiceChannel", "userSmall"]
 	},
-	"myId": "278543574059057154",
-	"myGuildId": "410787888507256842",
-	"mySolana": "8R96iUjP61Z6p6YHrcLX5QccZ93yk3rE6rtKBoupNExz",
-	"myEthereum": "0xaD7C90Ed43c0021d855970B9Ed6282A1922eECEb",
+	"myId": "731431244235145216",
+	"myGuildId": "1158681215948300299",
 	"authorIdAttribute": "data-author-id",
 	"authorFriendAttribute": "data-is-author-friend",
 	"authorSelfAttribute": "data-is-author-self",
