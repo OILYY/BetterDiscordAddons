@@ -12,7 +12,9 @@
 
 module.exports = (_ => {
 	const changeLog = {
-		
+		fixed: {
+			"New Style": "If Discord updated for you and you no longer got the old Custom Status Entry in the UserPopup, then you'll need to right click the Custom Status Bubble next to your avatar to pick a preset Custom Status"
+		}
 	};
 
 	return !window.BDFDB_Global || (!window.BDFDB_Global.loaded && !window.BDFDB_Global.started) ? class {
@@ -23,9 +25,14 @@ module.exports = (_ => {
 		getDescription () {return `The Library Plugin needed for ${this.name} is missing. Open the Plugin Settings to download it. \n\n${this.description}`;}
 		
 		downloadLibrary () {
-			require("request").get("https://OILYY.github.io/BetterDiscordAddons/Library/0BDFDB.plugin.js", (e, r, b) => {
-				if (!e && b && r.statusCode == 200) require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0BDFDB.plugin.js"), b, _ => BdApi.showToast("Finished downloading BDFDB Library", {type: "success"}));
-				else BdApi.alert("Error", "Could not download BDFDB Library Plugin. Try again later or download it manually from GitHub: https://OILYY.github.io/downloader/?library");
+			BdApi.Net.fetch("https://OILYY.github.io/BetterDiscordAddons/Library/0BDFDB.plugin.js").then(r => {
+				if (!r || r.status != 200) throw new Error();
+				else return r.text();
+			}).then(b => {
+				if (!b) throw new Error();
+				else return require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0BDFDB.plugin.js"), b, _ => BdApi.showToast("Finished downloading BDFDB Library", {type: "success"}));
+			}).catch(error => {
+				BdApi.alert("Error", "Could not download BDFDB Library Plugin. Try again later or download it manually from GitHub: https://OILYY.github.io/downloader/?library");
 			});
 		}
 		
@@ -229,7 +236,8 @@ module.exports = (_ => {
 						"Menu"
 					],
 					after: [
-						"CustomStatusModal"
+						"CustomStatusModal",
+						"UserPopoutCustomStatusPicker"
 					]
 				};
 				
@@ -252,30 +260,6 @@ module.exports = (_ => {
 					#status-picker${BDFDB.dotCN.menu} #status-picker-custom-status ${BDFDB.dotCN.menulabel} {
 						overflow: visible;
 						white-space: unset;
-					}
-					#status-picker${BDFDB.dotCN.menu} #status-picker-custom-status ${BDFDB.dotCN.customstatusitem} {
-						grid-template-rows: minmax(24px, auto) 1fr;
-					}
-					#status-picker${BDFDB.dotCN.menu} #status-picker-custom-status ${BDFDB.dotCN.customstatusitemcustom},
-					#status-picker${BDFDB.dotCN.menu} #status-picker-custom-status ${BDFDB.dotCN.customstatusitemcustomwithemoji} {
-						display: flex;
-						padding-right: 0;
-						padding-left: 0;
-					}
-					#status-picker${BDFDB.dotCN.menu} #status-picker-custom-status ${BDFDB.dotCNS.customstatusitemcustomwithemoji + BDFDB.dotCN.customstatusitememoji} {
-						margin-left: 4px;
-						order: 3;
-					}
-					#status-picker${BDFDB.dotCN.menu} #status-picker-custom-status ${BDFDB.dotCN.customstatusitemcustomtext} {
-						flex: 1 1 auto;
-						max-width: 126px;
-						overflow: hidden;
-						order: 2;
-					}
-					#status-picker${BDFDB.dotCN.menu} #status-picker-custom-status ${BDFDB.dotCN.customstatusitemclearbutton} {
-						margin-right: 10px;
-						margin-left: 2px;
-						order: 1;
 					}
 					${BDFDB.dotCN._customstatuspresetscustomstatusitem} {
 						display: flex;
@@ -332,15 +316,84 @@ module.exports = (_ => {
 				BDFDB.PatchUtils.forceAllUpdates(this);
 			}
 			
+			processUserPopoutCustomStatusPicker (e) {
+				if (e.instance.props.profileType != "BITE_SIZE") return;
+				let container = BDFDB.ReactUtils.findChild(e.returnvalue, {props: [["className", BDFDB.disCN.userpopoutcustomstatuspickervisiblecontainer]]});
+				if (!container) return;
+				let onContextMenu = container.props.onContextMenu;
+				container.props.onContextMenu = BDFDB.TimeUtils.suppress(event => {
+					onContextMenu && onContextMenu(event);
+					let enabledPresets = BDFDB.ObjectUtils.filter(presets, id => !presets[id].disabled, true);
+					if (!Object.keys(enabledPresets).length) return;
+					BDFDB.ContextMenuUtils.open(this, event, BDFDB.ContextMenuUtils.createItem(BDFDB.LibraryComponents.MenuItems.MenuGroup, {
+						children: Object.keys(BDFDB.ObjectUtils.sort(enabledPresets, "pos")).map(id => BDFDB.ContextMenuUtils.createItem(BDFDB.LibraryComponents.MenuItems.MenuItem, {
+							id: BDFDB.ContextMenuUtils.createItemId(this.name, "custom-status-preset", id),
+							label: BDFDB.ReactUtils.createElement("div", {
+								className: BDFDB.disCN._customstatuspresetscustomstatusitem,
+								children: [
+									BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.TooltipContainer, {
+										text: BDFDB.LanguageUtils.LanguageStrings.CUSTOM_STATUS_CLEAR_CUSTOM_STATUS,
+										tooltipConfig: {
+											zIndex: 2001
+										},
+										children: BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.Clickable, {
+											className: BDFDB.disCN._customstatuspresetsdeletebutton,
+											onClick: _ => {
+												delete presets[id];
+												let pos = 0, sortedPresets = BDFDB.ObjectUtils.sort(presets, "pos");
+												for (let id in sortedPresets) presets[id].pos = pos++;
+												BDFDB.DataUtils.save(presets, this, "presets");
+											},
+											children: BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.SvgIcon, {
+												className: BDFDB.disCN._customstatuspresetsdeleteicon,
+												name: BDFDB.LibraryComponents.SvgIcon.Names.CLOSE_CIRCLE,
+												width: 14,
+												height: 14
+											})
+										})
+									}),
+									BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.StatusComponents.Status, {
+										className: BDFDB.disCN._customstatuspresetsstatus,
+										status: presets[id].status || BDFDB.LibraryComponents.StatusComponents.Types.ONLINE
+									}),
+									BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.TextScroller, {
+										children: presets[id].text
+									})
+								]
+							}),
+							imageUrl: presets[id].emojiInfo && (presets[id].emojiInfo.id ? BDFDB.LibraryModules.IconUtils.getEmojiURL(presets[id].emojiInfo) : BDFDB.LibraryModules.EmojiStateUtils.getURL(presets[id].emojiInfo.name)),
+							hint: !presets[id].clearAfter ? BDFDB.LanguageUtils.LanguageStrings.DISPLAY_OPTION_NEVER : presets[id].clearAfter == ClearAfterValues.TODAY ? BDFDB.LanguageUtils.LanguageStrings.CUSTOM_STATUS_TODAY : BDFDB.LanguageUtils.LanguageStringsFormat("CUSTOM_STATUS_HOURS", presets[id].clearAfter/3600000),
+							action: _ => {
+								if (!presets[id]) return;
+								let expiresAt = presets[id].clearAfter ? presets[id].clearAfter : null;
+								if (presets[id].clearAfter === ClearAfterValues.TODAY) {
+									let date = new Date;
+									expiresAt = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).getTime() - date.getTime();
+								}
+								if (presets[id].status) BDFDB.DiscordUtils.setSetting("status", "status", presets[id].status);
+								BDFDB.DiscordUtils.setSetting("status", "customStatus", {
+									text: presets[id].text && presets[id].text.length > 0 ? presets[id].text : "",
+									expiresAtMs: expiresAt ? BDFDB.DiscordObjects.Timestamp().add(expiresAt, "ms").toDate().getTime().toString() : "0",
+									emojiId: presets[id].emojiInfo ? presets[id].emojiInfo.id : "0",
+									emojiName: presets[id].emojiInfo ? presets[id].emojiInfo.name : ""
+								});
+							}
+						}))
+					}));
+				}, "", this);
+			}
+			
 			processMenu (e) {
-				if (e.instance.props.navId != "status-picker" && e.instance.props.navId != "account") return;
+				if (e.instance.props.navId != "account" && e.instance.props.navId != "status") return;
 				let enabledPresets = BDFDB.ObjectUtils.filter(presets, id => !presets[id].disabled, true);
 				if (!Object.keys(enabledPresets).length) return;
-				let [children, index] = BDFDB.ContextMenuUtils.findItem(e.instance, {id: ["custom-status", "set-custom-status", "edit-custom-status"]});
+				let [children, index] = BDFDB.ContextMenuUtils.findItem(e.instance, {id: ["custom-status", "set-custom-status", "edit-custom-status", "add-custom-status"]});
 				if (index > -1 && children[index].props && !children[index].props.children) {
 					let render = children[index].props.render || children[index].props.label;
 					delete children[index].props.render;
 					delete children[index].props.label;
+					children[index].props.icon = children[index].props.hint;
+					delete children[index].props.hint;
 					children[index] = BDFDB.ContextMenuUtils.createItem(BDFDB.LibraryComponents.MenuItems.MenuItem, Object.assign({}, children[index].props, {
 						label: typeof render == "function" ? render() : render,
 						children: Object.keys(BDFDB.ObjectUtils.sort(enabledPresets, "pos")).map(id => BDFDB.ContextMenuUtils.createItem(BDFDB.LibraryComponents.MenuItems.MenuItem, {
