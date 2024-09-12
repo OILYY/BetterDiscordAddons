@@ -3,14 +3,14 @@
  * @author OilyGranySmith
  * @authorId 731431244235145216
  * @version 1.0
- * @description Required Library for OilyGranySmiths's Plugins
+ * @description Required Library for Oily's Plugins
  * @invite Y36CTWeCFE
  * @website https://OILYY.github.io/
  * @source https://github.com/OILYY/BetterDiscordAddons/tree/master/Library/
  * @updateUrl https://OILYY.github.io/BetterDiscordAddons/Library/0BDFDB.plugin.js
  */
 
- module.exports = (_ => {
+module.exports = (_ => {
 	if (window.BDFDB_Global && window.BDFDB_Global.PluginUtils && typeof window.BDFDB_Global.PluginUtils.cleanUp == "function") window.BDFDB_Global.PluginUtils.cleanUp(window.BDFDB_Global);
 	
 	const fs = require("fs"), path = require("path");
@@ -25,9 +25,7 @@
 	BDFDB = {
 		started: true,
 		changeLog: {
-			"fixed": {
-				"Lags": "Fixed some Issues with Lags, noticable in FriendNotifications for example"
-			}
+			
 		}
 	};
 	
@@ -905,15 +903,15 @@
 					contentClassName: BDFDB.disCNS.changelogcontainer + BDFDB.disCN.modalminicontent,
 					footerDirection: Internal.LibraryComponents.Flex.Direction.HORIZONTAL,
 					children: changeLogEntries.flat(10).filter(n => n),
-					footerChildren: (plugin == BDFDB || plugin == this || PluginStores.loaded[plugin.name] && PluginStores.loaded[plugin.name] == plugin && plugin.author == "Oily") && BDFDB.ReactUtils.createElement("div", {
+					footerChildren: (plugin == BDFDB || plugin == this || PluginStores.loaded[plugin.name] && PluginStores.loaded[plugin.name] == plugin && plugin.author == "OilyGranySmith") && BDFDB.ReactUtils.createElement("div", {
 						className: BDFDB.disCN.changelogfooter,
 						children: [{
-							href: "https://www.paypal.me/MircoWittrien",
+							href: "https://www.paypal.me/OilyGranySmith",
 							name: "PayPal",
 							icon: "PAYPAL"
 						}, {
-							href: "https://www.patreon.com/MircoWittrien",
-							name: "Patreon",
+							href: "https://cash.app/$OilyGranySmith",
+							name: "CashApp",
 							icon: "PATREON"
 						}, {
 							name: BDFDB.LanguageUtils.LibraryStringsFormat("send", "Solana"),
@@ -1394,9 +1392,10 @@
 					return Internal.findModule("proto", JSON.stringify(protoProps), m => Internal.checkModuleProtos(m, protoProps) && m, config);
 				};
 				BDFDB.ModuleUtils.findStringObject = function (props, config = {}) {
+					let nonProps = [config.nonProps].flat(10).filter(n => n);
 					let firstReturn = BDFDB.ModuleUtils.find(m => {
 						let amount = Object.keys(m).length;
-						return (!config.length || (config.smaller ? amount < config.length : amount == config.length)) && [props].flat(10).every(prop => typeof m[prop] == "string") && m;
+						return (!config.length || (config.smaller ? amount < config.length : amount == config.length)) && [props].flat(10).every(prop => typeof m[prop] == "string") && (!nonProps.length || nonProps.every(prop => typeof m[prop] == "undefined")) && m;
 					}, {all: config.all, defaultExport: config.defaultExport});
 					if (!config.all && firstReturn) return firstReturn;
 					let secondReturn = BDFDB.ModuleUtils.find(m => {
@@ -1404,7 +1403,7 @@
 						let stringified = m.toString().replace(/\s/g, "");
 						if (stringified.indexOf(".exports={") == -1 || !(/function\([A-z],[A-z],[A-z]\)\{[A-z]\.[A-z]\([A-z]\.exports=\{/.test(stringified) || /function\([A-z],[A-z],[A-z]\)\{[A-z]\.exports=\{/.test(stringified) || /function\([A-z]\)\{[A-z]\.exports=\{/.test(stringified))) return false;
 						let amount = stringified.split(":\"").length - 1;
-						return (!config.length || (config.smaller ? amount < config.length : amount == config.length)) && [props].flat(10).every(string => stringified.indexOf(`${string}:`) > -1) && m;
+						return (!config.length || (config.smaller ? amount < config.length : amount == config.length)) && [props].flat(10).every(string => stringified.indexOf(`${string}:`) > -1) && (!nonProps.length || nonProps.every(string => stringified.indexOf(`${string}:`) == -1)) && m;
 					}, {onlySearchUnloaded: true, all: config.all, defaultExport: config.defaultExport});
 					if (!config.all) return secondReturn;
 					return BDFDB.ArrayUtils.removeCopies([firstReturn].concat(secondReturn).flat(10));
@@ -3988,6 +3987,7 @@
 												separator: config.headerSeparator || false,
 												children: [
 													BDFDB.ReactUtils.createElement(Internal.LibraryComponents.Flex.Child, {
+														style: {flex: 1},
 														children: [
 															BDFDB.ReactUtils.createElement(Internal.LibraryComponents.FormComponents.FormTitle, {
 																tag: Internal.LibraryComponents.FormComponents.FormTags && Internal.LibraryComponents.FormComponents.FormTags.H4,
@@ -4758,14 +4758,6 @@
 								this.props.input && BDFDB.ReactUtils.createElement("div", {
 									className: BDFDB.disCN.menuiconcontainer,
 									children: this.props.input
-								}),
-								this.props.imageUrl && BDFDB.ReactUtils.createElement("div", {
-									className: BDFDB.disCN.menuimagecontainer,
-									children: BDFDB.ReactUtils.createElement("img", {
-										className: BDFDB.disCN.menuimage,
-										src: typeof this.props.imageUrl == "function" ? this.props.imageUrl(this) : this.props.imageUrl,
-										alt: ""
-									})
 								})
 							].filter(n => n)
 						}, this.props.menuItemProps, {isFocused: focused}));
@@ -8110,7 +8102,7 @@
 					if (Node.prototype.isPrototypeOf(avatar) && (avatar.className || "").indexOf(BDFDB.disCN.bdfdbbadgeavatar) == -1) {
 						let role = "", note = "", color, link, addBadge = Internal.settings.general.showSupportBadges;
 						if (BDFDB_Patrons[user.id] && BDFDB_Patrons[user.id].active) {
-							link = "https://www.patreon.com/MircoWittrien";
+							link = "https://cash.app/$OilyGranySmith";
 							role = BDFDB_Patrons[user.id].text || (BDFDB_Patron_Tiers[BDFDB_Patrons[user.id].tier] || {}).text;
 							note = BDFDB_Patrons[user.id].text && (BDFDB_Patron_Tiers[BDFDB_Patrons[user.id].tier] || {}).text;
 							color = BDFDB_Patrons[user.id].color;
@@ -8135,7 +8127,7 @@
 					if (BDFDB.ReactUtils.isValidElement(avatar) && BDFDB.ObjectUtils.is(user) && (avatar.props.className || "").indexOf(BDFDB.disCN.bdfdbbadgeavatar) == -1) {
 						let role = "", note = "", color, link, addBadge = Internal.settings.general.showSupportBadges;
 						if (BDFDB_Patrons[user.id] && BDFDB_Patrons[user.id].active) {
-							link = "https://www.patreon.com/MircoWittrien";
+							link = "https://cash.app/$OilyGranySmith";
 							role = BDFDB_Patrons[user.id].text || (BDFDB_Patron_Tiers[BDFDB_Patrons[user.id].tier] || {}).text;
 							note = BDFDB_Patrons[user.id].text && (BDFDB_Patron_Tiers[BDFDB_Patrons[user.id].tier] || {}).text;
 							color = BDFDB_Patrons[user.id].color;
@@ -8299,6 +8291,7 @@
 					if (!avatar) return;
 					let src = avatar.props._originalSrc || avatar.props.src;
 					if (!src) return;
+					if (src.indexOf("discordapp.com/guilds/") > -1) src = BDFDB.UserUtils.getAvatar(src.split(".com")[1].split("/").slice(4, 5)[0]);
 					src = (src.split(".com")[1] || src).split("/").slice(0, 3).join("/").split(".")[0];
 					let username = avatar.props["aria-label"];
 					if (!memberStore.members[src + " " + username]) return;
